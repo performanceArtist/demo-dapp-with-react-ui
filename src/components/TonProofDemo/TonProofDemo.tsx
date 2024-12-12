@@ -5,7 +5,6 @@ import {TonProofDemoApi} from "../../TonProofDemoApi";
 import {useTonConnectUI, useTonWallet} from "@tonconnect/ui-react";
 import useInterval from "../../hooks/useInterval";
 
-
 export const TonProofDemo = () => {
 	const firstProofLoading = useRef<boolean>(true);
 
@@ -61,7 +60,7 @@ export const TonProofDemo = () => {
 		if (!wallet) {
 			return;
 		}
-		const response = await TonProofDemoApi.getAccountInfo(wallet.account);
+		const response = await TonProofDemoApi.getAccountInfo();
 
 		setData(response);
 	}, [wallet]);
