@@ -8,10 +8,16 @@ import "./patch-local-storage-for-github-pages";
 import { CreateJettonRequestDto } from "./server/dto/create-jetton-request-dto";
 import axios from "axios";
 
+const axiosInstance = axios.create({
+  headers: {
+    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIxMzIxNCIsImlhdCI6MTczNDA4NDY1MiwiZXhwIjoxNzM0MDg0NzcyfQ.bPxxTOalh3Ht9-MHY_Ol8Pm1N7aGbyuPA7CHBXmoiaA`,
+  },
+});
+
 class TonProofDemoApiService {
   private localStorageKey = "demo-api-access-token";
 
-  private host = `http://localhost:3000/api/ton`;
+  private host = `http://localhost:3000/api/v1/ton`;
 
   public accessToken: string | null = null;
 
@@ -27,7 +33,9 @@ class TonProofDemoApiService {
 
   async generatePayload(): Promise<ConnectAdditionalRequest | null> {
     try {
-      const { data: response } = await axios.post(`${this.host}/payload`);
+      const { data: response } = await axiosInstance.post(
+        `${this.host}/payload`
+      );
       return { tonProof: response.payload as string };
     } catch (error) {
       console.error(error);
@@ -50,7 +58,7 @@ class TonProofDemoApiService {
         },
       };
 
-      const { data: response } = await axios.post(
+      const { data: response } = await axiosInstance.post(
         `${this.host}/proof`,
         reqBody
       );
@@ -59,6 +67,9 @@ class TonProofDemoApiService {
         localStorage.setItem(this.localStorageKey, response.token);
         this.accessToken = response.token;
       }
+
+      const info = axiosInstance.get(`http://localhost:3000/api/v1/user/me`);
+      console.log("info", info);
     } catch (e) {
       console.log("checkProof error:", e);
     }
